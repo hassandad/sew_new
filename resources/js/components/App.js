@@ -5,30 +5,41 @@ import Header from './Header';
 import Signup from './auth/Signup';
 import Login from './auth/Login';
 import Footer from './Footer';
+import Home from './Home';
+import PostJob from './PostJob';
+import { auth } from './helpers/auth';
 
 
 const Protected = () => <h3>Protected</h3>;
 
+
 const PrivateRoute = ({ component: Component, ...rest }) =>{
-    console.log('Private Route');
+    let token = localStorage.getItem('token');
     return(
         <Route {...rest} render={(props) => (
-          true === true ? <Component {...props} /> : <Redirect to='/login' />
+          token ? <Component {...props} /> : 
+          <Redirect to={{ pathname: "/login",state: { from: props.location }}} />
         )} />
     )
 }
 
 export default class App extends Component {
-        
+    constructor(props){
+        super(props);
+    }
+    
     render() {
+        const location = window.location.pathname;
+        const nonHeaderPages = ['/login','/signup'];
         return (
             <Router>
                 <div>
-                    <Header />
-                    <Route exact path="/" component={Signup} />
+                    {!nonHeaderPages.includes(location) && <Header />}
+                    <Route exact path="/" component={Login} />
                     <Route path="/signup" component={Signup} />
                     <Route path="/login" component={Login} />
-                    <PrivateRoute path='/protected' component={Protected} />
+                    <PrivateRoute path='/home' component={Home} />
+                    <PrivateRoute path='/post-job' component={PostJob} />
                 </div>
             </Router>
         );

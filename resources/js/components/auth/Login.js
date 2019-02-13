@@ -11,13 +11,18 @@ class Login extends React.Component {
       email: '',
       password: '',
       errorMessage: '',
-      redirectToReferrer: false
+      redirectToReferrer: false,
+      inSubmitState:false
     };
 
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    console.log(auth);
+    
+  }
+  
+  componentDidMount(){
+    this.mounted = true;
   }
 
   handleEmail(event) {
@@ -44,6 +49,10 @@ class Login extends React.Component {
     };
 
 
+    this.setState({
+      inSubmitState:true
+    });
+    
     var self = this;
     auth.authenticate(formValues).then(function () {
       console.log('submit resolve');
@@ -55,20 +64,17 @@ class Login extends React.Component {
       self.setState({
         errorMessage: errors.email[0]
       });
+    }).then(function(){
+      if(self.mounted){
+        self.setState({
+          inSubmitState:false
+        });
+      }
     });
-
-    /*
-     // Submit form values to ajax api
-     axios.post('/api/login', formValues)
-     .then(function (response) {
-     localStorage.setItem('token', response.data.token);
-     }).catch(function (error) {
-     self.setState({
-     errorMessage: error.response.data.errors.email[0]
-     });
-     }).then(function () {
-     
-     });*/
+  }
+  
+  componentWillUnmount(){
+    this.mounted = false;
   }
 
   render() {
@@ -76,34 +82,36 @@ class Login extends React.Component {
     const {redirectToReferrer} = this.state
 
     if (redirectToReferrer === true) {
-      
-      return <Redirect to='/private' />
+      return <Redirect to='/home' />
     }
 
     return(
-            <main role="main" className="container main-body-container">
-            
-              <form onSubmit={this.handleSubmit} className="form-signin text-center">
-                <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
-                <label htmlFor="inputEmail" className="sr-only">Email address</label>
-                <input onChange={this.handleEmail} type="email" id="inputEmail" className={`form-control ${isInvalid}`} placeholder="Email address" required="" autoFocus="" />
-                <label htmlFor="inputPassword" className="sr-only invalid">Password</label>
-                <input onChange={this.handlePassword} type="password" id="inputPassword" className={`form-control ${isInvalid}`} placeholder="Password" required="" />
-                <div className="error-message invalid-tooltip">
-                  {this.state.errorMessage}
-                </div>
-                <div className="checkbox mb-3">
-                  <label>
-                    <input type="checkbox" value="remember-me" /> Remember me
-                  </label>
-                </div>
-            
-            
-                <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                <p className="mt-5 mb-3 text-muted">© 2017-2018</p>
-              </form>
-            </main>
-            )
+      <main role="main" className="container main-body-container">
+
+        <form onSubmit={this.handleSubmit} className="form-signin text-center" noValidate>
+          <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
+          <label htmlFor="inputEmail" className="sr-only">Email address</label>
+          <input onChange={this.handleEmail} type="email" id="inputEmail" className={`form-control ${isInvalid}`} placeholder="Email address" required="" autoFocus="" />
+          <label htmlFor="inputPassword" className="sr-only invalid">Password</label>
+          <input onChange={this.handlePassword} type="password" id="inputPassword" className={`form-control ${isInvalid}`} placeholder="Password" required="" />
+          <div className="error-message invalid-tooltip">
+            {this.state.errorMessage}
+          </div>
+          <div className="checkbox mb-3">
+            <label>
+              <input type="checkbox" value="remember-me" /> Remember me
+            </label>
+          </div>
+
+
+          <button className="btn btn-lg btn-primary btn-block" type="submit" disabled={ this.state.inSubmitState } >
+            <span className={'spinner-grow spinner-grow-sm ' + (this.state.inSubmitState ? '':'d-none') } role="status" aria-hidden="true"></span>
+            { this.state.inSubmitState ? 'Submitting...' : 'Sign in' }
+          </button>
+          <p className="mt-5 mb-3 text-muted">© 2017-2018</p>
+        </form>
+      </main>
+  )
   }
 }
 
