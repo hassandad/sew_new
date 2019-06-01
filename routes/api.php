@@ -23,6 +23,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', function (Request $request) {
         //    return $request->user();
     });
-
+    Route::get('/get_post_job_lookup_records', 'JobController@getPostJobLookupRecords');
 });
-//Route::post('/register', 'RegistrationController@store');
+

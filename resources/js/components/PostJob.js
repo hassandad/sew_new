@@ -39,11 +39,7 @@ class PostJob extends React.Component{
   }
   
   componentWillMount(){
-    axios.get('/user', {
-      params: {
-        ID: 12345
-      }
-    })
+    axios.get('/api/get_post_job_lookup_records')
     .then(function (response) {
       console.log(response);
     })
@@ -52,6 +48,7 @@ class PostJob extends React.Component{
     })
     .then(function () {
       // always executed
+      
     }); 
   }
   
